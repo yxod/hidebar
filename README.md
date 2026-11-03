@@ -13,11 +13,34 @@
   &nbsp;·&nbsp; macOS 14 or later &nbsp;·&nbsp; best on macOS 27 and MacBooks with a notch
 </p>
 
+<p align="center">
+  <a href="https://github.com/yxod/hidebar/releases/latest"><img src="https://img.shields.io/github/v/release/yxod/hidebar" alt="Latest release"></a>
+  <a href="https://github.com/yxod/hidebar/actions/workflows/build.yml"><img src="https://github.com/yxod/hidebar/actions/workflows/build.yml/badge.svg" alt="Build"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
+</p>
+
 ---
 
 On a MacBook with a notch, only about a dozen icons fit to the right of the camera, and macOS tucks the rest behind its « button. HideBar lets you decide which icons always stay in sight and which stay hidden until you ask for them.
 
 HideBar started as a replacement for Hidden Bar. On macOS 27, Hidden Bar hides icons by switching on the system's exam mode, and while it is on, clicking the clock no longer opens Notification Center. HideBar uses the menu bar's own overflow instead, so the clock, notifications and everything else keep working.
+
+## Screenshots
+
+Hidden: only the icons you chose stay in sight, with the system « right next to them.
+
+![Menu bar with icons hidden](docs/images/menubar-hidden.png)
+
+After a click on «: the hidden icons appear in place, and the `|` line marks where the hidden ones start. The gap in the middle is the camera notch.
+
+![Menu bar with hidden icons revealed](docs/images/menubar-revealed.png)
+
+Settings come in tabs:
+
+<p align="center">
+  <img src="docs/images/settings-general.png" width="400" alt="General settings">
+  <img src="docs/images/settings-about.png" width="400" alt="About tab">
+</p>
 
 ## Features
 
@@ -49,19 +72,23 @@ If you use Hidden Bar or a similar app, quit it first: two icon hiders get in ea
 
 **Open Settings.** HideBar has no icon of its own, so open it again: from Spotlight (⌘Space → HideBar), Launchpad or the Applications folder. You can also right-click the `|` line while icons are revealed, or open `hidebar://settings`.
 
+**Report a problem.** In Settings › About, press **Copy Diagnostics** and paste the result into a [bug report](https://github.com/yxod/hidebar/issues/new/choose).
+
 ## Settings
 
-| Setting | What it does |
-|---|---|
-| Launch at login | Starts HideBar together with macOS |
-| Language | English or Українська; HideBar restarts to switch |
-| Hide icons on launch | Hides everything left of the separator `\|` right after start |
-| Show/hide shortcut | Shows all icons or hides them again from any app |
-| Hide icons again automatically | How many seconds to wait before hiding revealed icons |
-| Wait while the pointer is in the menu bar | Doesn't pull icons away from under your pointer |
-| Accessibility | Shows whether access is granted and opens the page to grant it |
-| Reset Positions | Puts the separator back next to the system icons |
-| Menu Bar Settings… | Opens System Settings, where an app's icon can be removed for good |
+| Tab | Setting | What it does |
+|---|---|---|
+| General | Launch at login | Starts HideBar together with macOS |
+| General | Hide icons on launch | Hides everything left of the separator `\|` right after start |
+| General | Language | English or Українська; HideBar restarts to switch |
+| General | Show/hide shortcut | Shows all icons or hides them again from any app |
+| Hiding | Hide icons again automatically | How many seconds to wait before hiding revealed icons |
+| Hiding | Wait while the pointer is in the menu bar | Doesn't pull icons away from under your pointer |
+| Hiding | Reset Positions | Puts the separator back next to the system icons |
+| Hiding | Menu Bar Settings… | Opens System Settings, where an app's icon can be removed for good |
+| Accessibility | Status | Shows whether access is granted and opens the page to grant it |
+| Updates | Check / install automatically | Daily checks for new versions, optionally installing them on their own |
+| About | Copy Diagnostics | Copies details for a bug report |
 
 ## Permissions and privacy
 

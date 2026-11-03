@@ -10,6 +10,8 @@
 # The update signature uses the Sparkle EdDSA key in the login keychain (made once with
 # .build/artifacts/sparkle/Sparkle/bin/generate_keys); its public half must match SUPublicEDKey.
 #
+# Finally it bumps the Homebrew cask in TAP_REPO (default yxod/homebrew-tap), if that repository exists.
+#
 # --dry-run stops after the DMG: nothing is committed, tagged or published, and Info.plist is restored.
 # --skip-notarize skips Apple's notary service (only sensible together with --dry-run).
 #
@@ -151,3 +153,17 @@ xmllint --noout "$APPCAST"
 gh release upload "$TAG" "$APPCAST"
 gh release edit "$TAG" --draft=false --latest >/dev/null
 echo "https://github.com/$REPO/releases/tag/$TAG"
+
+step "Homebrew cask"
+TAP_REPO="${TAP_REPO:-yxod/homebrew-tap}"
+CASK_PATH="Casks/hidebar.rb"
+if CASK_SHA="$(gh api "repos/$TAP_REPO/contents/$CASK_PATH" --jq .sha 2>/dev/null)"; then
+    DMG_SHA="$(shasum -a 256 "$DMG" | cut -d' ' -f1)"
+    CASK="$(gh api "repos/$TAP_REPO/contents/$CASK_PATH" --jq .content | tr -d '\n' | base64 --decode \
+        | sed -E "s/^  version \".*\"/  version \"$VERSION\"/; s/^  sha256 \".*\"/  sha256 \"$DMG_SHA\"/")"
+    gh api -X PUT "repos/$TAP_REPO/contents/$CASK_PATH" -f message="hidebar $VERSION" \
+        -f content="$(printf '%s\n' "$CASK" | base64)" -f sha="$CASK_SHA" >/dev/null
+    echo "$TAP_REPO: hidebar $VERSION"
+else
+    echo "No $CASK_PATH in $TAP_REPO; skipped"
+fi
