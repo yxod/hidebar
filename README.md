@@ -1,99 +1,101 @@
 <p align="center">
-  <img src="docs/icon.png" width="128" height="128" alt="Иконка HideBar">
+  <img src="docs/icon.png" width="128" height="128" alt="HideBar icon">
 </p>
 
 <h1 align="center">HideBar</h1>
 
 <p align="center">
-  Прячет лишние иконки в строке меню macOS и не ломает Центр уведомлений.
+  Hide the menu bar icons you don't need, without breaking Notification Center.
 </p>
 
 <p align="center">
-  <a href="https://github.com/yxod/hidebar/releases/latest"><b>Скачать последнюю версию</b></a>
-  &nbsp;·&nbsp; macOS 14 и новее &nbsp;·&nbsp; лучше всего на macOS 27 и MacBook с вырезом
+  <a href="https://github.com/yxod/hidebar/releases/latest"><b>Download the latest version</b></a>
+  &nbsp;·&nbsp; macOS 14 or later &nbsp;·&nbsp; best on macOS 27 and MacBooks with a notch
 </p>
 
 ---
 
-На MacBook с вырезом справа от камеры помещается от силы полтора десятка иконок, а остальные macOS убирает за стрелку «. HideBar позволяет самому решить, какие иконки всегда на виду, а какие спрятаны и появляются по клику.
+On a MacBook with a notch, only about a dozen icons fit to the right of the camera, and macOS tucks the rest behind its « button. HideBar lets you decide which icons always stay in sight and which stay hidden until you ask for them.
 
-HideBar появился как замена Hidden Bar. На macOS 27 тот прячет иконки через системный «режим экзамена», и из-за этого клик по часам перестаёт открывать Центр уведомлений. HideBar пользуется обычным механизмом самой macOS, поэтому часы, уведомления и всё остальное работают как прежде.
+HideBar started as a replacement for Hidden Bar. On macOS 27, Hidden Bar hides icons by switching on the system's exam mode, and while it is on, clicking the clock no longer opens Notification Center. HideBar uses the menu bar's own overflow instead, so the clock, notifications and everything else keep working.
 
-## Возможности
+## Features
 
-- **Одна стрелка.** HideBar не добавляет свою кнопку: работает системная «, которая и так есть в строке меню.
-- **Иконки появляются на месте.** Клик по « раскрывает спрятанные иконки прямо рядом с остальными, а не отдельным рядом на другом конце экрана.
-- **Прячутся сами.** Через 10 секунд, когда курсор ушёл из строки меню, иконки снова скрываются (для раскрытых через « нужен «Универсальный доступ»). Пока ты работаешь с меню какой-то иконки, HideBar ждёт.
-- **Центр уведомлений открывается** кликом по часам в любой момент.
-- **Свой порядок.** Перетащи иконки с зажатым ⌘: всё, что левее разделителя `|`, прячется, всё, что правее, всегда на виду.
-- **Сочетание клавиш**, чтобы показать или спрятать все иконки, **запуск при входе** и **команды `hidebar://`** для Shortcuts и Raycast.
-- **Русский и английский** интерфейс, язык берётся из системы.
-- **Лёгкий и приватный:** нативное приложение на Swift, без сторонних библиотек, без сети и без сбора данных.
+- **One arrow.** HideBar adds no button of its own: you use the system « that is already in the menu bar.
+- **Icons appear in place.** Clicking « reveals the hidden icons right next to the others, not in a separate row at the far end of the screen.
+- **They hide again on their own.** A few seconds after the pointer leaves the menu bar, the icons are tucked away again (icons revealed with « need Accessibility access for this). While you are using an icon's menu, HideBar waits.
+- **Notification Center opens** with a click on the clock, any time.
+- **Your order.** Hold ⌘ and drag icons: everything left of the `|` separator is hidden, everything right of it stays visible.
+- **Keyboard shortcut** to show or hide all icons, **launch at login**, and **`hidebar://` links** for Shortcuts and Raycast.
+- **English and Ukrainian** interface, switchable in Settings.
+- **Light and private:** a native Swift app with no third-party code, no network access and no data collection.
 
-## Установка
+## Installation
 
-1. Скачай `HideBar-x.y.z.dmg` из [Releases](https://github.com/yxod/hidebar/releases/latest).
-2. Открой образ и перетащи HideBar в «Программы». Приложение подписано и нотаризовано Apple, предупреждений при запуске не будет.
-3. Запусти HideBar. Откроются настройки: там можно включить **«Запускать при входе в систему»**.
-4. По желанию разреши HideBar **«Универсальный доступ»** (кнопка «Разрешить…» в настройках). Он нужен только для автоскрытия иконок, раскрытых через «, всё остальное работает и без него.
+1. Download `HideBar-x.y.z.dmg` from [Releases](https://github.com/yxod/hidebar/releases/latest).
+2. Open it and drag HideBar to Applications. The app is signed and notarized by Apple, so it opens without warnings.
+3. Launch HideBar. Settings open, where you can turn on **Launch at login**.
+4. Optionally, grant **Accessibility** access (the **Allow Access…** button in Settings). It is only needed to hide icons revealed with « automatically; everything else works without it.
 
-Если у тебя стоит Hidden Bar или другая подобная программа, выключи её: два скрывателя мешают друг другу.
+If you use Hidden Bar or a similar app, quit it first: two icon hiders get in each other's way.
 
-## Как пользоваться
+## Usage
 
-**Выбери, что прятать.** Пока открыто окно настроек, в строке меню виден разделитель `|`. Зажми ⌘ и перетаскивай иконки: левее `|` они будут спрятаны, правее останутся на виду. Закроешь настройки — лишнее спрячется.
+**Choose what to hide.** While the Settings window is open, the `|` separator is visible in the menu bar. Hold ⌘ and drag icons: left of `|` they will be hidden, right of it they stay visible. Close Settings and the rest disappears.
 
-**Посмотреть спрятанное.** Нажми системную «. Иконки появятся рядом с остальными, а полоска `|` покажет, какие из них спрячутся обратно. Те, что не помещаются справа от выреза, macOS поставит вплотную к нему слева.
+**See hidden icons.** Click the system «. The icons appear next to the others, and the `|` line shows which of them will hide again. Icons that don't fit right of the notch are placed by macOS right next to it on the left.
 
-**Спрятать снова.** Нажми » или просто уведи курсор из строки меню: через 10 секунд HideBar спрячет всё сам.
+**Hide them again.** Click », or just move the pointer out of the menu bar: after the delay you set, HideBar hides everything on its own.
 
-**Открыть настройки.** Своего значка у HideBar нет, поэтому настройки открываются повторным запуском: через Spotlight (⌘Пробел → HideBar), Launchpad или папку «Программы». Ещё можно кликнуть правой кнопкой по полоске `|`, когда иконки раскрыты, или открыть ссылку `hidebar://settings`.
+**Open Settings.** HideBar has no icon of its own, so open it again: from Spotlight (⌘Space → HideBar), Launchpad or the Applications folder. You can also right-click the `|` line while icons are revealed, or open `hidebar://settings`.
 
-## Настройки
+## Settings
 
-| Настройка | Что делает |
+| Setting | What it does |
 |---|---|
-| Запускать при входе в систему | HideBar стартует вместе с macOS |
-| Скрывать иконки при запуске | Сразу после старта прячет всё, что левее разделителя `\|` |
-| Сочетание клавиш | Показывает все иконки или прячет их обратно из любого приложения |
-| Снова скрывать иконки автоматически | Через сколько секунд прятать раскрытые иконки (по умолчанию 10) |
-| Не скрывать, пока курсор в строке меню | Не убирает иконки у тебя из-под курсора |
-| Сбросить позиции | Возвращает разделитель на место рядом с системными иконками |
-| Настройки строки меню… | Открывает системные настройки, где иконку приложения можно убрать насовсем |
+| Launch at login | Starts HideBar together with macOS |
+| Language | English or Українська; HideBar restarts to switch |
+| Hide icons on launch | Hides everything left of the separator `\|` right after start |
+| Show/hide shortcut | Shows all icons or hides them again from any app |
+| Hide icons again automatically | How many seconds to wait before hiding revealed icons |
+| Wait while the pointer is in the menu bar | Doesn't pull icons away from under your pointer |
+| Accessibility | Shows whether access is granted and opens the page to grant it |
+| Reset Positions | Puts the separator back next to the system icons |
+| Menu Bar Settings… | Opens System Settings, where an app's icon can be removed for good |
 
-## Разрешения и приватность
+## Permissions and privacy
 
-- **Универсальный доступ** — по желанию. С ним HideBar может сам нажать », чтобы спрятать иконки, раскрытые через «. Курсор при этом не двигается.
-- Запись экрана, доступ к файлам и сеть HideBar не нужны. Настройки хранятся локально на твоём Mac, никакие данные никуда не отправляются.
+- **Accessibility** is optional. With it, HideBar can press » for you to hide icons revealed with «. The pointer doesn't move.
+- HideBar doesn't need screen recording, file access or the network. Settings stay on your Mac, and no data is sent anywhere.
 
-## Автоматизация
+## Automation
 
-Ссылки работают из Shortcuts, Raycast, Alfred, терминала (`open "hidebar://toggle"`) и откуда угодно ещё.
+The links work from Shortcuts, Raycast, Alfred, the terminal (`open "hidebar://toggle"`) and anything else that opens URLs.
 
-| Ссылка | Действие |
+| Link | Action |
 |---|---|
-| `hidebar://toggle` | Показать или спрятать иконки |
-| `hidebar://show` | Показать все иконки |
-| `hidebar://hide` | Спрятать иконки |
-| `hidebar://settings` | Открыть настройки |
-| `hidebar://launch-at-login/on` | Включить запуск при входе (`/off` — выключить) |
+| `hidebar://toggle` | Show or hide the icons |
+| `hidebar://show` | Show all icons |
+| `hidebar://hide` | Hide the icons |
+| `hidebar://settings` | Open Settings |
+| `hidebar://launch-at-login/on` | Turn on launch at login (`/off` turns it off) |
 
-## Вопросы
+## FAQ
 
-**Почему часть иконок появляется слева от выреза?**
-Справа от камеры мало места. Всё, что туда не влезло, macOS ставит вплотную к вырезу слева. Если иконок слишком много, ненужные лучше выключить совсем в «Системные настройки › Строка меню».
+**Why do some icons appear left of the notch?**
+There is little room right of the camera. Whatever doesn't fit, macOS places right next to the notch on the left. If you have too many icons, switch the ones you don't need off for good in System Settings › Menu Bar.
 
-**После записи экрана одна спрятанная иконка осталась на виду.**
-Индикатор записи экрана временно занимает место у выреза. Когда он пропадает, на освободившееся место может выйти одна иконка. Следующий клик по « и » всё выправит.
+**After a screen recording, one hidden icon stayed visible.**
+The screen recording indicator takes room next to the notch for a while. When it goes away, one icon can move into the freed space. The next click on « and » sorts it out.
 
-**Работает ли на внешнем мониторе и на старых macOS?**
-Поддержка есть, но проверена меньше всего: HideBar отлаживался на macOS 27 и встроенном экране MacBook с вырезом. На экранах без выреза он сам подбирает ширину под меню активного приложения. На старых версиях macOS без системного переполнения строки меню появляется своя стрелка HideBar, как в классическом Hidden Bar.
+**Does it work on an external display or older macOS?**
+Yes, but these are the least tested: HideBar was developed on macOS 27 and the built-in display of a MacBook with a notch. On displays without a notch, it fits the separator to the active app's menus by itself. On older macOS versions without the system menu bar overflow, HideBar shows its own arrow, like the classic Hidden Bar.
 
-## Для разработчиков
+## For developers
 
 ```bash
-./build.sh install      # собрать и установить в /Applications
-./release.sh 1.0.1      # выпустить нотаризованный релиз на GitHub
+./build.sh install      # build and install to /Applications
+./release.sh 1.0.1      # publish a notarized release on GitHub
 ```
 
-Как устроено скрытие, почему ломался Hidden Bar, сборка и релизы — в [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+How hiding works, why Hidden Bar breaks Notification Center, building and releasing: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
