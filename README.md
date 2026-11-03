@@ -35,7 +35,7 @@ HideBar started as a replacement for Hidden Bar. On macOS 27, Hidden Bar hides i
 1. Download `HideBar-x.y.z.dmg` from [Releases](https://github.com/yxod/hidebar/releases/latest).
 2. Open it and drag HideBar to Applications. The app is signed and notarized by Apple, so it opens without warnings.
 3. Launch HideBar. Settings open, where you can turn on **Launch at login**.
-4. Optionally, grant **Accessibility** access (the **Allow Access…** button in Settings). It is only needed to hide icons revealed with « automatically; everything else works without it.
+4. Optionally, grant **Accessibility** access (the **Allow Access…** button in Settings). With it, HideBar sees exactly where every icon is, so hidden ones never slip back into the bar, and it can hide icons revealed with « on its own. Everything else works without it.
 
 If you use Hidden Bar or a similar app, quit it first: two icon hiders get in each other's way.
 
@@ -65,7 +65,7 @@ If you use Hidden Bar or a similar app, quit it first: two icon hiders get in ea
 
 ## Permissions and privacy
 
-- **Accessibility** is optional. With it, HideBar can press » for you to hide icons revealed with «. The pointer doesn't move.
+- **Accessibility** is optional. With it, HideBar reads where the menu bar has placed each icon (to keep hidden ones hidden) and can press » for you to hide icons revealed with «. The pointer doesn't move, and HideBar only reads the menu bar.
 - HideBar doesn't need screen recording, file access or the network. Settings stay on your Mac, and no data is sent anywhere.
 
 ## Automation
@@ -87,10 +87,10 @@ The links work from Shortcuts, Raycast, Alfred, the terminal (`open "hidebar://t
 There is little room right of the camera. Whatever doesn't fit, macOS places right next to the notch on the left. If you have too many icons, switch the ones you don't need off for good in System Settings › Menu Bar.
 
 **After a screen recording, one hidden icon stayed visible.**
-The screen recording indicator takes room next to the notch for a while. When it goes away, one icon can move into the freed space. The next click on « and » sorts it out.
+The screen recording indicator takes room next to the notch for a while, and when it goes away an icon can move into the freed space. With Accessibility access HideBar notices this and hides the icon again right away; without it, the next click on « and » sorts it out.
 
 **Does it work on an external display or older macOS?**
-Yes, but these are the least tested: HideBar was developed on macOS 27 and the built-in display of a MacBook with a notch. On displays without a notch, it fits the separator to the active app's menus by itself. On older macOS versions without the system menu bar overflow, HideBar shows its own arrow, like the classic Hidden Bar.
+Yes, but these are the least tested: HideBar was developed on macOS 27 and the built-in display of a MacBook with a notch. On displays without a notch, it fits the separator to the active app's menus by itself: exactly with Accessibility access, by trying lengths without it. On older macOS versions without the system menu bar overflow, HideBar shows its own arrow, like the classic Hidden Bar.
 
 ## For developers
 
@@ -100,3 +100,7 @@ Yes, but these are the least tested: HideBar was developed on macOS 27 and the b
 ```
 
 How hiding works, why Hidden Bar breaks Notification Center, building and releasing: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
+## License
+
+[MIT](LICENSE)

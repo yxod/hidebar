@@ -54,7 +54,7 @@
 "Status" = "Стан";
 "Granted" = "Надано";
 "Not granted" = "Не надано";
-"Lets HideBar press » for you, so icons shown with « hide again on their own. Without it everything else works; close the row with » yourself." = "Дозволяє HideBar натискати » за вас, щоб показані через « іконки ховалися самі. Без нього все інше працює, просто ряд закривається кнопкою » вручну.";
+"Lets HideBar see exactly where every icon is, so hidden ones never slip back into the bar, and press » for you, so icons shown with « hide again on their own. Without it everything else works; close the row with » yourself." = "Дозволяє HideBar бачити, де саме стоїть кожна іконка, щоб сховані не вилазили назад у рядок меню, і натискати » за вас, щоб показані через « іконки ховалися самі. Без нього все інше працює, просто ряд закривається кнопкою » вручну.";
 "Open Privacy Settings…" = "Відкрити параметри конфіденційності…";
 "Allow Access…" = "Надати доступ…";
 "In System Settings › Privacy & Security, switch HideBar on. This window notices it right away." = "У Системних параметрах › Конфіденційність і безпека увімкніть HideBar. Це вікно одразу це помітить.";

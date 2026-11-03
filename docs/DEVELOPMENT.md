@@ -33,9 +33,15 @@ When the row opens, HideBar reveals the icons in place: it shrinks the separator
 
 After the delay (10 s by default), when the pointer is outside the menu bar and no menu is open, HideBar presses » itself. That is the `MenuBarAgent` button with the identifier `menu-bar-overflow-indicator-expanded` (`menu-bar-overflow-indicator` while closed). HideBar only presses the button in its open state, and `AXPress` works without moving the pointer.
 
-### Known limitation
+### Precise layout through Accessibility
 
-When the screen-recording pill goes away, one hidden icon may take the freed space until the next click on « and ». Every hide starts fitting from the widest length, so it sorts itself out.
+With Accessibility access, `MenuBarAccessibility.snapshot(on:)` reads `MenuBarAgent`'s window: one `AXGroup` per status item with its frame and identifier, plus the « / » button. HideBar's own items carry identifiers starting with `dev.qweb.HideBar.`. Overflowed items are parked behind the « button, so an item between the notch and the collapsed separator that isn't parked there is a hidden icon that slipped back (or a system indicator).
+
+- After every fit, and whenever the layout moves, HideBar looks for such icons and grows the separator over them while it still fits. Whatever can't be pushed out (a system indicator) is remembered by position and not retried until the set changes.
+- When the screen-recording pill goes away and an icon slips into the freed room, this notices it within a fraction of a second. Without Accessibility that icon stays until the next click on « and ».
+- On displays without a notch, the right edge of the active app's menus (`NSWorkspace.menuBarOwningApplication` → `AXMenuBar`) replaces the bisection as the edge of the free room.
+
+`hidebar://debug` also logs this snapshot.
 
 ## Updates
 

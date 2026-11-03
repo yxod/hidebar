@@ -122,7 +122,7 @@ struct SettingsView: View {
                                 .foregroundStyle(.orange)
                         }
                     }
-                    Text("Lets HideBar press » for you, so icons shown with « hide again on their own. Without it everything else works; close the row with » yourself.")
+                    Text("Lets HideBar see exactly where every icon is, so hidden ones never slip back into the bar, and press » for you, so icons shown with « hide again on their own. Without it everything else works; close the row with » yourself.")
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                     HStack {

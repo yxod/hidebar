@@ -88,6 +88,9 @@ final class MenuBarController: NSObject, ObservableObject {
     private var fitTask: Task<Void, Never>?
     /// When fitting last gave up because nothing fit; retrying on every relayout would just make icons flicker.
     private var fitGaveUpAt: Date?
+    /// Icons left of the separator that growing over them couldn't push out (a system indicator, say), by
+    /// position; the same set isn't retried, a changed one is.
+    private var blockedLeaks: [Int]?
     /// Fitted lengths for displays without a notch, where the free width depends on the active app's menus.
     private var fitCache: [String: CGFloat] = [:]
 
@@ -216,7 +219,18 @@ final class MenuBarController: NSObject, ObservableObject {
 
     func logGeometry() {
         trace("geometry: separator=\(String(describing: separatorItem.button?.window?.frame)) length=\(separatorItem.length) rowSensor=\(Self.describe(rowSensor)) notch=\(String(describing: separatorScreen?.notchRightEdge))")
+        guard let screen = separatorScreen else { return }
+        if let snapshot = MenuBarAccessibility.snapshot(on: screen) {
+            let items = snapshot.items.map { "\(Int($0.frame.minX))+\(Int($0.frame.width))\($0.identifier.isEmpty ? "" : ":" + $0.identifier)" }
+            trace("accessibility: overflowButton=\(String(describing: snapshot.overflowButton)) items=\(items.joined(separator: " "))")
+        } else {
+            trace("accessibility: no snapshot (not trusted?)")
+        }
+        if let edge = layoutEdge(on: screen) {
+            trace("edge=\(edge) leaks=\(String(describing: iconsLeftOfSeparator(on: screen, edge: edge)?.map { Int($0.minX) }))")
+        }
     }
+
 
     func prepareForTermination() {
         fitTask?.cancel()
@@ -236,6 +250,7 @@ final class MenuBarController: NSObject, ObservableObject {
             button.target = self
             button.action = #selector(separatorClicked(_:))
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+            button.setAccessibilityIdentifier(MenuBarAccessibility.identifierPrefix + "separator")
         }
 
         if Self.usesAgentMenuBar {
@@ -260,6 +275,8 @@ final class MenuBarController: NSObject, ObservableObject {
         let item = NSStatusBar.system.statusItem(withLength: Metrics.sensorLength)
         item.autosaveName = name
         item.isVisible = true
+        item.button?.setAccessibilityIdentifier(MenuBarAccessibility.identifierPrefix + name)
+        // An empty button means nothing to VoiceOver users.
         item.button?.setAccessibilityElement(false)
         return item
     }
@@ -436,6 +453,16 @@ final class MenuBarController: NSObject, ObservableObject {
             // separator's edge sits a few points off the true anchor, so measure it properly.
             trace("separator moved: anchor \(anchor) -> \(frame.maxX)")
             remeasureAndFit()
+            return
+        }
+        // With Accessibility the actual layout shows hidden icons that slipped back into the bar, for example
+        // when a screen-recording indicator went away and freed its room.
+        if !isOverflowRowOpen, let screen = separatorScreen, let edge = layoutEdge(on: screen),
+           let leaks = iconsLeftOfSeparator(on: screen, edge: edge), !leaks.isEmpty {
+            let positions = leaks.map { Int($0.minX) }
+            guard positions != blockedLeaks else { return }
+            trace("hidden icons slipped into the bar at \(positions)")
+            startFit()
         }
     }
 
@@ -497,19 +524,19 @@ final class MenuBarController: NSObject, ObservableObject {
         }
         separatorInOverflow = false
 
-        guard let notchEdge = screen.notchRightEdge else {
+        guard let edge = layoutEdge(on: screen) else {
             await bisectSeparator(anchor: anchor, screen: screen)
             return
         }
 
-        // Right of the notch only status items live, so the free width is almost known up front. Almost:
+        // Right of the notch (or of the active app's menus) the free width is almost known up front. Almost:
         // system indicators such as the screen-recording pill take room too, so verify and adjust.
         let rowOpen = isOverflowRowOpen
-        var length = anchor - notchEdge - (rowOpen ? Metrics.chevronSlotReserve : Metrics.chevronOverlapReserve)
+        var length = anchor - edge - (rowOpen ? Metrics.chevronSlotReserve : Metrics.chevronOverlapReserve)
         var fits = false
         while length >= Metrics.minimumCollapsedLength {
             guard let ok = await tryLength(length, anchor: anchor, screen: screen) else { return }
-            trace("fit notch=\(notchEdge) anchor=\(anchor) rowOpen=\(rowOpen) length=\(length) fits=\(ok)")
+            trace("fit edge=\(edge) anchor=\(anchor) rowOpen=\(rowOpen) length=\(length) fits=\(ok)")
             if ok { fits = true; break }
             length -= Metrics.shrinkStep
         }
@@ -523,6 +550,53 @@ final class MenuBarController: NSObject, ObservableObject {
                 // Nothing fits around the old anchor: icons right of the separator came or went.
                 remeasureAndFit()
             }
+            return
+        }
+        await coverLeakedIcons(from: length, anchor: anchor, screen: screen, edge: edge)
+    }
+
+    /// Where the room for status items begins: the notch, or without one the end of the active app's menus,
+    /// which only Accessibility can tell.
+    private func layoutEdge(on screen: NSScreen) -> CGFloat? {
+        screen.notchRightEdge ?? MenuBarAccessibility.appMenusMaxX(on: screen)
+    }
+
+    /// Icons the menu bar shows between `edge` and the collapsed separator: hidden ones that slipped back, or
+    /// a system indicator. Needs Accessibility; nil without it.
+    private func iconsLeftOfSeparator(on screen: NSScreen, edge: CGFloat) -> [CGRect]? {
+        guard let separator = laidOutSeparatorFrame(on: screen),
+              let snapshot = MenuBarAccessibility.snapshot(on: screen) else { return nil }
+        return snapshot.items.compactMap { item in
+            let frame = item.frame
+            // HideBar's own items, and empty slots narrower than any real icon.
+            guard !item.identifier.hasPrefix(MenuBarAccessibility.identifierPrefix), frame.width >= 20,
+                  frame.minX >= edge - 1, frame.maxX <= separator.minX + 2 else { return nil }
+            // Overflowed items are parked behind the « button.
+            if let button = snapshot.overflowButton, abs(frame.midX - button.midX) < 20 { return nil }
+            return frame
+        }
+    }
+
+    /// Grows the separator over hidden icons that slipped back into the bar, as long as it still fits.
+    private func coverLeakedIcons(from length: CGFloat, anchor: CGFloat, screen: NSScreen, edge: CGFloat) async {
+        var length = length
+        for _ in 0..<3 {
+            guard let separator = laidOutSeparatorFrame(on: screen),
+                  let leaks = iconsLeftOfSeparator(on: screen, edge: edge), !leaks.isEmpty,
+                  let leftmost = leaks.map(\.minX).min() else {
+                blockedLeaks = nil
+                return
+            }
+            let wider = length + separator.minX - leftmost
+            guard let fits = await tryLength(wider, anchor: anchor, screen: screen) else { return }
+            trace("fit cover icons at \(leaks.map { Int($0.minX) }) length=\(wider) fits=\(fits)")
+            if fits {
+                length = wider
+                continue
+            }
+            // Something there can't be pushed out, a system indicator say: stay at the widest that fits.
+            guard await tryLength(length, anchor: anchor, screen: screen) != nil else { return }
+            blockedLeaks = iconsLeftOfSeparator(on: screen, edge: edge)?.map { Int($0.minX) }
             return
         }
     }
