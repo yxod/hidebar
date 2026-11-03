@@ -11,13 +11,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Use the newest Xcode on the runner
+        run: |
+          XCODE="$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)"
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+          swift --version
+
       - name: Translations are complete
         run: |
           python3 scripts/check-localizations.py
           plutil -lint Resources/Info.plist Resources/*.lproj/Localizable.strings
 
-      - name: Build the app bundle (ad-hoc signed)
-        run: SIGN_IDENTITY=- ./build.sh
+      - name: Build the app bundle (ad-hoc signed, arm64)
+        run: SIGN_IDENTITY=- ARCHS=arm64 ./build.sh
 
       - name: The bundle is complete
         run: |

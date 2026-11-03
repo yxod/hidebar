@@ -6,8 +6,13 @@ cd "$(dirname "$0")"
 CONFIG="${CONFIG:-release}"
 APP="build/HideBar.app"
 
-swift build -c "$CONFIG" --arch arm64 --arch x86_64
-BIN_DIR="$(swift build -c "$CONFIG" --arch arm64 --arch x86_64 --show-bin-path)"
+# Universal by default; ARCHS="arm64" builds one architecture (CI does, its Xcode chokes on universal builds).
+read -r -a ARCH_LIST <<< "${ARCHS:-arm64 x86_64}"
+ARCH_FLAGS=()
+for arch in "${ARCH_LIST[@]}"; do ARCH_FLAGS+=(--arch "$arch"); done
+
+swift build -c "$CONFIG" "${ARCH_FLAGS[@]}"
+BIN_DIR="$(swift build -c "$CONFIG" "${ARCH_FLAGS[@]}" --show-bin-path)"
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
