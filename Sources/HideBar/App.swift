@@ -4,6 +4,7 @@ import AppKit
 enum HideBarApp {
     @MainActor
     static func main() {
+        AppLanguage.applyAtLaunch()
         let app = NSApplication.shared
         let delegate = AppDelegate()
         app.delegate = delegate
@@ -14,6 +15,9 @@ enum HideBarApp {
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    /// Passed when HideBar restarts itself (to switch the language) so the settings come back.
+    nonisolated static let showSettingsArgument = "--show-settings"
+
     private var controller: MenuBarController?
     private var settingsWindow: SettingsWindowController?
 
@@ -28,7 +32,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.controller = controller
 
         let prefs = Preferences.shared
-        if !prefs.didShowWelcome {
+        if !prefs.didShowWelcome || CommandLine.arguments.contains(Self.showSettingsArgument) {
             prefs.didShowWelcome = true
             showSettings()
         }

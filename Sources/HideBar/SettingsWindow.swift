@@ -75,6 +75,13 @@ struct SettingsView: View {
                         .font(.callout)
                         .foregroundStyle(.red)
                 }
+                Picker("Language", selection: Binding(get: { AppLanguage.current },
+                                                      set: { AppLanguage.switchTo($0) })) {
+                    ForEach(AppLanguage.allCases) { language in
+                        Text(verbatim: language.name).tag(language)
+                    }
+                }
+                .help(Text("HideBar restarts to switch the language."))
                 Toggle("Hide icons on launch", isOn: $prefs.collapseOnLaunch)
                 LabeledContent("Show/hide shortcut") {
                     ShortcutRecorder(combo: $prefs.hotKey) { recording in
@@ -101,23 +108,41 @@ struct SettingsView: View {
                 if !MenuBarController.usesAgentMenuBar {
                     Toggle("Show icons when the pointer rests on the arrow", isOn: $prefs.expandOnHover)
                 }
-                if MenuBarController.usesAgentMenuBar {
-                    if accessibilityTrusted {
-                        Label("Icons shown with « hide again too: HideBar presses » for you.",
-                              systemImage: "checkmark.circle")
-                            .foregroundStyle(.secondary)
-                    } else {
-                        HStack {
-                            Text("To hide icons shown with « automatically too, HideBar needs Accessibility access to press ».")
-                                .foregroundStyle(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Spacer()
-                            Button("Allow…") {
+            }
+
+            if MenuBarController.usesAgentMenuBar {
+                Section {
+                    LabeledContent("Status") {
+                        if accessibilityTrusted {
+                            Label("Granted", systemImage: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                        } else {
+                            Label("Not granted", systemImage: "exclamationmark.circle.fill")
+                                .foregroundStyle(.orange)
+                        }
+                    }
+                    Text("Lets HideBar press » for you, so icons shown with « hide again on their own. Without it everything else works; close the row with » yourself.")
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    HStack {
+                        Spacer()
+                        if accessibilityTrusted {
+                            Button("Open Privacy Settings…") { MenuBarAccessibility.openSystemSettings() }
+                        } else {
+                            Button("Allow Access…") {
+                                // Adds HideBar to the list, then shows the page with its switch.
                                 MenuBarAccessibility.requestTrust()
                                 MenuBarAccessibility.openSystemSettings()
                             }
+                            .buttonStyle(.borderedProminent)
                         }
                     }
+                } header: {
+                    Text("Accessibility")
+                } footer: {
+                    Text("In System Settings › Privacy & Security, switch HideBar on. This window notices it right away.")
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
 
@@ -169,6 +194,10 @@ struct SettingsView: View {
         .onAppear(perform: refreshLoginItem)
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             refreshLoginItem()
+        }
+        // The permission is usually switched on in System Settings while this window stays in the background.
+        .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
+            accessibilityTrusted = MenuBarAccessibility.isTrusted
         }
     }
 
