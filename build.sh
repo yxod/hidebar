@@ -19,13 +19,19 @@ if [ -f Resources/AppIcon.icns ]; then
 fi
 
 # Sign with a Developer ID if the keychain has one: macOS then keeps the Accessibility permission across
-# rebuilds. SIGN_IDENTITY overrides; "-" means ad-hoc.
+# rebuilds. SIGN_IDENTITY overrides; "-" means ad-hoc. SIGN_TIMESTAMP=1 adds Apple's secure timestamp,
+# which notarization requires (it needs the network, so day-to-day builds skip it).
 if [ -z "${SIGN_IDENTITY:-}" ]; then
     SIGN_IDENTITY="$(security find-identity -v -p codesigning 2>/dev/null \
         | sed -n 's/.*"\(Developer ID Application: [^"]*\)".*/\1/p' | head -1)"
     SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 fi
-codesign --force --sign "$SIGN_IDENTITY" --options runtime --timestamp=none "$APP"
+if [ "${SIGN_TIMESTAMP:-0}" = "1" ]; then
+    TIMESTAMP_FLAG="--timestamp"
+else
+    TIMESTAMP_FLAG="--timestamp=none"
+fi
+codesign --force --sign "$SIGN_IDENTITY" --options runtime "$TIMESTAMP_FLAG" "$APP"
 echo "Built $APP (signed: $SIGN_IDENTITY)"
 
 if [ "${1:-}" = "install" ]; then

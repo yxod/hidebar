@@ -57,3 +57,20 @@ swift scripts/make-icon.swift   # перегенерировать Resources/App
 ```
 
 Нужен Xcode / Swift 6 toolchain, macOS 14+.
+
+## Релизы
+
+`./release.sh 1.0.1` выпускает версию на GitHub:
+1. поднимает версию в `Resources/Info.plist`;
+2. собирает приложение с подписью Developer ID и временной меткой Apple;
+3. упаковывает его в `build/HideBar-1.0.1.dmg` (внутри приложение и ярлык «Программы»);
+4. нотаризует и «прошивает» DMG, так что Gatekeeper открывает его без предупреждений;
+5. коммитит версию, ставит тег `v1.0.1`, отправляет на GitHub и создаёт релиз с DMG и автоматическими заметками (свои добавляются через `NOTES_FILE=notes.md`).
+
+Перед первым релизом один раз сохрани учётные данные для нотаризации. Пароль приложения создаётся на appleid.apple.com:
+
+```bash
+xcrun notarytool store-credentials hidebar-notary --apple-id ТВОЙ_APPLE_ID --team-id 2U5V9VG262
+```
+
+Проверить всё, кроме публикации, можно так: `./release.sh 1.0.1 --dry-run` (с нотаризацией) или `./release.sh 1.0.1 --dry-run --skip-notarize` (без неё). Пробный прогон ничего не коммитит и возвращает `Info.plist` как был.
