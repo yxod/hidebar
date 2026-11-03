@@ -1,0 +1,69 @@
+/* Status item */
+"Show hidden icons" = "Показать скрытые иконки";
+"Hide icons" = "Скрыть иконки";
+"Right-click for menu, ⌥-click for settings" = "Правый клик — меню, ⌥-клик — настройки";
+"HideBar separator" = "Разделитель HideBar";
+"Settings…" = "Настройки…";
+"Quit HideBar" = "Завершить HideBar";
+
+/* Arrow styles */
+"Chevron" = "Шеврон";
+"Triangle" = "Треугольник";
+"Dot" = "Точка";
+"Eye" = "Глаз";
+
+/* Shortcut recorder */
+"Esc cancels, ⌫ clears" = "Esc — отмена, ⌫ — удалить";
+"Click to record a new shortcut" = "Нажмите, чтобы записать новое сочетание";
+"Remove shortcut" = "Удалить сочетание";
+"Press keys…" = "Нажмите клавиши…";
+"Record Shortcut" = "Записать сочетание";
+
+/* Settings */
+"HideBar Settings" = "Настройки HideBar";
+"General" = "Основные";
+"Launch at login" = "Запускать при входе в систему";
+"Allow HideBar in System Settings › Login Items." = "Разрешите HideBar в Системных настройках › Объекты входа.";
+"Open…" = "Открыть…";
+"Hide icons on launch" = "Скрывать иконки при запуске";
+"Show/hide shortcut" = "Сочетание клавиш";
+"This shortcut is taken by another app. Choose a different one." = "Это сочетание уже занято другим приложением. Выберите другое.";
+"Hiding" = "Скрытие";
+"Hide icons again automatically" = "Снова скрывать иконки автоматически";
+"After" = "Через";
+"%d sec" = "%d с";
+"Wait while the pointer is in the menu bar" = "Не скрывать, пока курсор в строке меню";
+"Show icons when the pointer rests on the arrow" = "Показывать иконки при наведении на стрелку";
+"Appearance" = "Внешний вид";
+"Arrow" = "Стрелка";
+"Show the | separator while icons are visible" = "Показывать разделитель |, когда иконки видны";
+"Icon positions" = "Расположение";
+"Reset Positions" = "Сбросить позиции";
+"Menu Bar Settings…" = "Настройки строки меню…";
+"Version" = "Версия";
+"Hiding method" = "Способ скрытия";
+"System overflow «" = "Системное переполнение «";
+"Off-screen push" = "Сдвиг за край экрана";
+
+/* How it works */
+"How it works" = "Как это работает";
+"Click the arrow to hide every icon left of the | separator. Click it again to bring them back." = "Клик по стрелке прячет все иконки левее разделителя |. Повторный клик возвращает их.";
+"Hold ⌘ and drag icons in the menu bar to choose which ones hide: put them left of |." = "Зажмите ⌘ и перетащите иконки в строке меню: всё, что левее |, будет прятаться.";
+"Clicking the clock keeps opening Notification Center: HideBar never switches on Assessment Mode." = "Клик по часам по-прежнему открывает Центр уведомлений: HideBar не включает режим экзамена (Assessment Mode).";
+"Right-click the arrow for the menu, ⌥-click it for these settings." = "Правый клик по стрелке открывает меню, ⌥-клик — эти настройки.";
+"Reset puts the separator next to the system icons. To remove an app's icon from the menu bar for good, switch it off in System Settings › Menu Bar." = "«Сбросить позиции» ставит разделитель рядом с системными иконками. Чтобы убрать иконку приложения из строки меню насовсем, выключите её в Системных настройках › Строка меню.";
+"Click to hide icons left of |, right-click for menu" = "Клик прячет иконки левее |, правый клик — меню";
+
+/* How it works, agent-drawn menu bar */
+"Icons left of the | separator are tucked behind the system « button. Click « to show them in place, click » to hide them again." = "Иконки левее разделителя | убираются за системную кнопку «. Клик по « показывает их на месте, клик по » снова прячет.";
+"While this window is open the | separator is visible: hold ⌘ and drag icons to either side of it." = "Пока это окно открыто, разделитель | виден: зажмите ⌘ и перетаскивайте иконки по разные стороны от него.";
+"The shortcut shows every icon in the bar; click | or wait a few seconds to hide them again." = "Сочетание клавиш показывает все иконки в строке меню; клик по | или пара секунд ожидания снова их прячут.";
+"To come back here, open HideBar again from Spotlight or the Applications folder." = "Чтобы вернуться сюда, снова откройте HideBar через Spotlight или папку «Программы».";
+
+/* Problems */
+"The | separator sits in the system overflow, so there is nothing to hide. Hold ⌘ and drag it to the right of the icons you want to hide, or press Reset Positions." = "Разделитель | попал в системное переполнение, поэтому прятать нечего. Зажмите ⌘ и перетащите его правее иконок, которые нужно прятать, или нажмите «Сбросить позиции».";
+
+/* Accessibility */
+"Icons shown with « hide again too: HideBar presses » for you." = "Показанные через « иконки тоже скрываются: HideBar сам нажимает ».";
+"To hide icons shown with « automatically too, HideBar needs Accessibility access to press »." = "Чтобы показанные через « иконки тоже скрывались автоматически, HideBar нужен Универсальный доступ: он нажимает » за вас.";
+"Allow…" = "Разрешить…";
