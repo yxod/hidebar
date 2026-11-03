@@ -55,8 +55,20 @@ Settings come in tabs:
 
 ## Installation
 
+With [Homebrew](https://brew.sh):
+
+```bash
+brew trust yxod/tap
+brew install --cask yxod/tap/hidebar
+```
+
+Or by hand:
+
 1. Download `HideBar-x.y.z.dmg` from [Releases](https://github.com/yxod/hidebar/releases/latest).
 2. Open it and drag HideBar to Applications. The app is signed and notarized by Apple, so it opens without warnings.
+
+Then:
+
 3. Launch HideBar. Settings open, where you can turn on **Launch at login**.
 4. Optionally, grant **Accessibility** access (the **Allow Access…** button in Settings). With it, HideBar sees exactly where every icon is, so hidden ones never slip back into the bar, and it can hide icons revealed with « on its own. Everything else works without it.
 

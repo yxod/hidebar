@@ -90,7 +90,8 @@ Requires Xcode with Swift 6 and macOS 14+. With a Developer ID signature, macOS 
 3. packs it into `build/HideBar-1.0.1.dmg` (the app plus an Applications shortcut);
 4. notarizes and staples the DMG, so Gatekeeper opens it without warnings;
 5. commits the version, tags `v1.0.1` and pushes;
-6. creates the release as a draft with the DMG and generated notes (add your own with `NOTES_FILE=notes.md`), builds `appcast.xml` with the update signature and those notes, attaches it and only then publishes the release.
+6. creates the release as a draft with the DMG and generated notes (add your own with `NOTES_FILE=notes.md`), builds `appcast.xml` with the update signature and those notes, attaches it and only then publishes the release;
+7. bumps the version and checksum in `Casks/hidebar.rb` of [yxod/homebrew-tap](https://github.com/yxod/homebrew-tap) (`TAP_REPO` overrides it).
 
 Before the first release, store the notarization credentials once. The app-specific password is created at appleid.apple.com:
 
