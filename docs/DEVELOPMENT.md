@@ -37,6 +37,21 @@ After the delay (10 s by default), when the pointer is outside the menu bar and 
 
 When the screen-recording pill goes away, one hidden icon may take the freed space until the next click on « and ». Every hide starts fitting from the widest length, so it sorts itself out.
 
+## Updates
+
+HideBar updates itself with [Sparkle](https://sparkle-project.org). `SUFeedURL` in `Info.plist` points at `https://github.com/yxod/hidebar/releases/latest/download/appcast.xml`, the appcast attached to the latest release, and installed copies check it daily (or on **Check for Updates…**). Every update DMG carries an EdDSA signature that must match `SUPublicEDKey`; Sparkle also checks that the new app is signed by the same Developer ID.
+
+The private half of the key sits in the login keychain, created once with:
+
+```bash
+.build/artifacts/sparkle/Sparkle/bin/generate_keys      # prints the public key for SUPublicEDKey
+.build/artifacts/sparkle/Sparkle/bin/generate_keys -x sparkle-private-key.txt   # backup; keep it safe, not in git
+```
+
+Without that key no further update can be signed for existing installs, so keep a backup in a password manager. `release.sh` refuses to run when the keychain key and `SUPublicEDKey` differ.
+
+`build.sh` copies `Sparkle.framework` into `Contents/Frameworks`, drops its XPC services (only sandboxed apps need them) and signs Sparkle's helpers, the framework and the app inside out. To try an update locally, serve a signed DMG and an appcast over `http://127.0.0.1` and point the app at it with `defaults write dev.qweb.HideBar SUFeedURL http://127.0.0.1:PORT/appcast.xml` (delete the key afterwards).
+
 ## Language
 
 The interface is English unless Ukrainian is chosen in Settings. The choice is stored as `appLanguage` and applied as the app's `AppleLanguages` before the app starts, so switching restarts HideBar (with `--show-settings` to bring the window back). Strings live in `Resources/uk.lproj/Localizable.strings`, keyed by the English text.
@@ -68,7 +83,8 @@ Requires Xcode with Swift 6 and macOS 14+. With a Developer ID signature, macOS 
 2. builds the app signed with the Developer ID and Apple's timestamp;
 3. packs it into `build/HideBar-1.0.1.dmg` (the app plus an Applications shortcut);
 4. notarizes and staples the DMG, so Gatekeeper opens it without warnings;
-5. commits the version, tags `v1.0.1`, pushes and creates the release with the DMG and generated notes (add your own with `NOTES_FILE=notes.md`).
+5. commits the version, tags `v1.0.1` and pushes;
+6. creates the release as a draft with the DMG and generated notes (add your own with `NOTES_FILE=notes.md`), builds `appcast.xml` with the update signature and those notes, attaches it and only then publishes the release.
 
 Before the first release, store the notarization credentials once. The app-specific password is created at appleid.apple.com:
 

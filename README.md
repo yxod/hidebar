@@ -78,6 +78,7 @@ The links work from Shortcuts, Raycast, Alfred, the terminal (`open "hidebar://t
 | `hidebar://show` | Show all icons |
 | `hidebar://hide` | Hide the icons |
 | `hidebar://settings` | Open Settings |
+| `hidebar://check-for-updates` | Check for a new version |
 | `hidebar://launch-at-login/on` | Turn on launch at login (`/off` turns it off) |
 
 ## FAQ

@@ -3,8 +3,12 @@
 #
 # Bumps the version in Resources/Info.plist, builds the app signed with the Developer ID and Apple's
 # timestamp, packs it into a DMG, notarizes and staples the DMG, then commits the bump, tags vX.Y.Z,
-# pushes and creates the GitHub release with the DMG attached. NOTES_FILE adds your own notes on top of
-# the generated ones.
+# pushes and creates the GitHub release with the DMG and the Sparkle appcast.xml that installed copies
+# check for updates (SUFeedURL points at the latest release's appcast.xml). NOTES_FILE adds your own
+# notes on top of the generated ones; they also show in the update window.
+#
+# The update signature uses the Sparkle EdDSA key in the login keychain (made once with
+# .build/artifacts/sparkle/Sparkle/bin/generate_keys); its public half must match SUPublicEDKey.
 #
 # --dry-run stops after the DMG: nothing is committed, tagged or published, and Info.plist is restored.
 # --skip-notarize skips Apple's notary service (only sensible together with --dry-run).
@@ -37,6 +41,8 @@ NOTARY_PROFILE="${NOTARY_PROFILE:-hidebar-notary}"
 TAG="v$VERSION"
 PLIST="Resources/Info.plist"
 DMG="build/HideBar-$VERSION.dmg"
+APPCAST="build/appcast.xml"
+SPARKLE_BIN=".build/artifacts/sparkle/Sparkle/bin"
 
 step "Preflight"
 [ -z "$(git status --porcelain)" ] || fail "the working tree has uncommitted changes"
@@ -46,6 +52,11 @@ IDENTITY="$(security find-identity -v -p codesigning \
     | sed -n '/Developer ID Application/{s/.*"\(Developer ID Application: [^"]*\)".*/\1/p;q;}')"
 [ -n "$IDENTITY" ] || fail "no Developer ID Application certificate in the keychain"
 echo "Signing as: $IDENTITY"
+[ -x "$SPARKLE_BIN/sign_update" ] || swift package resolve >/dev/null
+KEYCHAIN_KEY="$("$SPARKLE_BIN/generate_keys" -p 2>/dev/null || true)"
+PLIST_KEY="$(/usr/libexec/PlistBuddy -c 'Print :SUPublicEDKey' "$PLIST")"
+[ "$KEYCHAIN_KEY" = "$PLIST_KEY" ] \
+    || fail "the Sparkle key in the keychain doesn't match SUPublicEDKey; installed copies would reject the update"
 if [ "$NOTARIZE" = 1 ]; then
     xcrun notarytool history --keychain-profile "$NOTARY_PROFILE" >/dev/null 2>&1 \
         || fail "no notarytool profile '$NOTARY_PROFILE'; run the setup line at the top of this script"
@@ -91,6 +102,11 @@ if [ "$NOTARIZE" = 1 ]; then
     spctl --assess --type open --context context:primary-signature --verbose=2 "$DMG"
 fi
 
+step "Update signature"
+# Prints: sparkle:edSignature="…" length="…"
+ED_ATTRIBUTES="$("$SPARKLE_BIN/sign_update" "$DMG")"
+echo "$ED_ATTRIBUTES"
+
 if [ "$DRY_RUN" = 1 ]; then
     step "Dry run done: $DMG. Nothing committed, tagged or published."
     exit 0
@@ -103,6 +119,35 @@ git tag -a "$TAG" -m "HideBar $VERSION"
 git push -q origin main "$TAG"
 
 step "GitHub release"
+REPO="$(gh repo view --json nameWithOwner -q .nameWithOwner)"
 NOTES_ARGS=(--generate-notes)
 if [ -n "${NOTES_FILE:-}" ]; then NOTES_ARGS+=(--notes-file "$NOTES_FILE"); fi
-gh release create "$TAG" "$DMG" --title "HideBar $VERSION" "${NOTES_ARGS[@]}"
+# A draft first, so the latest release never lacks the appcast installed copies look for.
+gh release create "$TAG" "$DMG" --draft --title "HideBar $VERSION" "${NOTES_ARGS[@]}" >/dev/null
+
+step "Appcast"
+NOTES_HTML="$(gh release view "$TAG" --json body -q .body \
+    | gh api markdown -F text=@- -f mode=gfm -f context="$REPO")"
+cat > "$APPCAST" <<XML
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>HideBar</title>
+    <link>https://github.com/$REPO</link>
+    <item>
+      <title>HideBar $VERSION</title>
+      <pubDate>$(LC_ALL=C date -u '+%a, %d %b %Y %H:%M:%S +0000')</pubDate>
+      <sparkle:version>$BUILD</sparkle:version>
+      <sparkle:shortVersionString>$VERSION</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>$(/usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' "$PLIST")</sparkle:minimumSystemVersion>
+      <description><![CDATA[$NOTES_HTML]]></description>
+      <enclosure url="https://github.com/$REPO/releases/download/$TAG/$(basename "$DMG")"
+                 type="application/octet-stream" $ED_ATTRIBUTES/>
+    </item>
+  </channel>
+</rss>
+XML
+xmllint --noout "$APPCAST"
+gh release upload "$TAG" "$APPCAST"
+gh release edit "$TAG" --draft=false --latest >/dev/null
+echo "https://github.com/$REPO/releases/tag/$TAG"

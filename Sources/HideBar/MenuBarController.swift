@@ -68,6 +68,7 @@ final class MenuBarController: NSObject, ObservableObject {
     @Published private(set) var hotKeyUnavailable = false
 
     var onOpenSettings: (() -> Void)?
+    var onCheckForUpdates: (() -> Void)?
 
     private let prefs = Preferences.shared
     /// Only on the classic menu bar; the agent-drawn one has the system « for this.
@@ -357,6 +358,8 @@ final class MenuBarController: NSObject, ObservableObject {
         menu.addItem(.separator())
         menu.addItem(withTitle: NSLocalizedString("Settings…", comment: ""), action: #selector(menuSettings),
                      keyEquivalent: ",").target = self
+        menu.addItem(withTitle: NSLocalizedString("Check for Updates…", comment: ""),
+                     action: #selector(menuCheckForUpdates), keyEquivalent: "").target = self
         menu.addItem(.separator())
         menu.addItem(withTitle: NSLocalizedString("Quit HideBar", comment: ""),
                      action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -367,6 +370,7 @@ final class MenuBarController: NSObject, ObservableObject {
 
     @objc private func menuToggle() { toggle() }
     @objc private func menuSettings() { onOpenSettings?() }
+    @objc private func menuCheckForUpdates() { onCheckForUpdates?() }
 
     // MARK: - Sensors
 

@@ -19,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     nonisolated static let showSettingsArgument = "--show-settings"
 
     private var controller: MenuBarController?
+    private var updates: UpdateController?
     private var settingsWindow: SettingsWindowController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -28,8 +29,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         let controller = MenuBarController()
+        let updates = UpdateController()
         controller.onOpenSettings = { [weak self] in self?.showSettings() }
+        controller.onCheckForUpdates = { updates.checkForUpdates() }
         self.controller = controller
+        self.updates = updates
 
         let prefs = Preferences.shared
         if !prefs.didShowWelcome || CommandLine.arguments.contains(Self.showSettingsArgument) {
@@ -43,7 +47,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return false
     }
 
-    /// `hidebar://toggle`, `hidebar://show`, `hidebar://hide`, `hidebar://settings`,
+    /// `hidebar://toggle`, `hidebar://show`, `hidebar://hide`, `hidebar://settings`, `hidebar://check-for-updates`,
     /// `hidebar://launch-at-login/on|off` for Shortcuts, Raycast etc.; `hidebar://debug` writes the separator
     /// geometry to the log.
     func application(_ application: NSApplication, open urls: [URL]) {
@@ -54,6 +58,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case "hide": controller?.collapse()
             case "settings": showSettings()
             case "launch-at-login": try? LoginItem.setEnabled(url.lastPathComponent != "off")
+            case "check-for-updates": updates?.checkForUpdates()
             case "debug": controller?.logGeometry()
             default: break
             }
@@ -65,9 +70,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func showSettings() {
-        guard let controller else { return }
+        guard let controller, let updates else { return }
         if settingsWindow == nil {
-            settingsWindow = SettingsWindowController(controller: controller)
+            settingsWindow = SettingsWindowController(controller: controller, updates: updates)
         }
         settingsWindow?.show()
     }

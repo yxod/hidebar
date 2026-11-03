@@ -6,9 +6,9 @@ import SwiftUI
 final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     private let controller: MenuBarController
 
-    init(controller: MenuBarController) {
+    init(controller: MenuBarController, updates: UpdateController) {
         self.controller = controller
-        let hosting = NSHostingController(rootView: SettingsView(controller: controller))
+        let hosting = NSHostingController(rootView: SettingsView(controller: controller, updates: updates))
         hosting.sizingOptions = [.preferredContentSize]
         let window = NSWindow(contentViewController: hosting)
         window.title = NSLocalizedString("HideBar Settings", comment: "")
@@ -35,6 +35,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
 
 struct SettingsView: View {
     @ObservedObject var controller: MenuBarController
+    @ObservedObject var updates: UpdateController
     @ObservedObject private var prefs = Preferences.shared
 
     @State private var launchAtLogin = LoginItem.isEnabled
@@ -177,6 +178,22 @@ struct SettingsView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
+            Section("Updates") {
+                Toggle("Check for updates automatically",
+                       isOn: Binding(get: { updates.automaticallyChecks }, set: { updates.automaticallyChecks = $0 }))
+                Toggle("Download and install updates automatically",
+                       isOn: Binding(get: { updates.automaticallyDownloads },
+                                     set: { updates.automaticallyDownloads = $0 }))
+                    .disabled(!updates.automaticallyChecks)
+                HStack {
+                    Text(lastUpdateCheck)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Check for Updates…") { updates.checkForUpdates() }
+                        .disabled(!updates.canCheckForUpdates)
+                }
+            }
+
             Section {
                 LabeledContent("Version", value: Self.version)
                 LabeledContent("Hiding method", value: MenuBarController.usesAgentMenuBar
@@ -199,6 +216,14 @@ struct SettingsView: View {
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
             accessibilityTrusted = MenuBarAccessibility.isTrusted
         }
+    }
+
+    private var lastUpdateCheck: String {
+        guard let date = updates.lastCheckDate else { return NSLocalizedString("Not checked yet", comment: "") }
+        let formatter = RelativeDateTimeFormatter()
+        formatter.locale = Locale(identifier: AppLanguage.current.rawValue)
+        return String(format: NSLocalizedString("Last checked: %@", comment: ""),
+                      formatter.localizedString(for: date, relativeTo: Date()))
     }
 
     private static var version: String {

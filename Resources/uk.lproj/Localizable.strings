@@ -60,3 +60,9 @@
 "In System Settings › Privacy & Security, switch HideBar on. This window notices it right away." = "У Системних параметрах › Конфіденційність і безпека увімкніть HideBar. Це вікно одразу це помітить.";
 "Language" = "Мова";
 "HideBar restarts to switch the language." = "HideBar перезапуститься, щоб змінити мову.";
+"Check for Updates…" = "Перевірити оновлення…";
+"Updates" = "Оновлення";
+"Check for updates automatically" = "Автоматично перевіряти оновлення";
+"Download and install updates automatically" = "Автоматично завантажувати й встановлювати оновлення";
+"Not checked yet" = "Ще не перевірялося";
+"Last checked: %@" = "Остання перевірка: %@";

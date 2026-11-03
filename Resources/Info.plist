@@ -48,5 +48,13 @@
 	<string>© 2026 qweb</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://github.com/yxod/hidebar/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>4Gs3apddT0Ashoy41g2GeSl66i5Qr6xn5N0A7D435lA=</string>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 </dict>
 </plist>

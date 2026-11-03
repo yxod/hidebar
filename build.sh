@@ -18,6 +18,12 @@ if [ -f Resources/AppIcon.icns ]; then
     cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 fi
 
+# Sparkle (updates) loads from Contents/Frameworks. Its XPC services are only for sandboxed apps.
+FRAMEWORK="$APP/Contents/Frameworks/Sparkle.framework"
+mkdir -p "$APP/Contents/Frameworks"
+cp -R "$BIN_DIR/Sparkle.framework" "$FRAMEWORK"
+rm -rf "$FRAMEWORK/XPCServices" "$FRAMEWORK/Versions/B/XPCServices"
+
 # Sign with a Developer ID if the keychain has one: macOS then keeps the Accessibility permission across
 # rebuilds. SIGN_IDENTITY overrides; "-" means ad-hoc. SIGN_TIMESTAMP=1 adds Apple's secure timestamp,
 # which notarization requires (it needs the network, so day-to-day builds skip it).
@@ -31,7 +37,12 @@ if [ "${SIGN_TIMESTAMP:-0}" = "1" ]; then
 else
     TIMESTAMP_FLAG="--timestamp=none"
 fi
-codesign --force --sign "$SIGN_IDENTITY" --options runtime "$TIMESTAMP_FLAG" "$APP"
+# Inside out: Sparkle's helpers, the framework, then the app.
+sign() { codesign --force --sign "$SIGN_IDENTITY" --options runtime "$TIMESTAMP_FLAG" "$@"; }
+sign "$FRAMEWORK/Versions/B/Autoupdate"
+sign "$FRAMEWORK/Versions/B/Updater.app"
+sign "$FRAMEWORK"
+sign "$APP"
 echo "Built $APP (signed: $SIGN_IDENTITY)"
 
 if [ "${1:-}" = "install" ]; then
