@@ -36,8 +36,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.updates = updates
 
         let prefs = Preferences.shared
-        if !prefs.didShowWelcome || CommandLine.arguments.contains(Self.showSettingsArgument) {
+        if !prefs.didShowWelcome {
             prefs.didShowWelcome = true
+            showSettings(tab: .about)
+        } else if CommandLine.arguments.contains(Self.showSettingsArgument) {
             showSettings()
         }
     }
@@ -69,12 +71,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         controller?.prepareForTermination()
     }
 
-    private func showSettings() {
+    private func showSettings(tab: SettingsWindowController.Tab? = nil) {
         guard let controller, let updates else { return }
         if settingsWindow == nil {
             settingsWindow = SettingsWindowController(controller: controller, updates: updates)
         }
-        settingsWindow?.show()
+        settingsWindow?.show(tab: tab)
     }
 
     /// Only one copy may own the separator; a second launch just opens the running copy's settings.

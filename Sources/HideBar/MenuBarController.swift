@@ -221,7 +221,11 @@ final class MenuBarController: NSObject, ObservableObject {
         trace("geometry: separator=\(String(describing: separatorItem.button?.window?.frame)) length=\(separatorItem.length) rowSensor=\(Self.describe(rowSensor)) notch=\(String(describing: separatorScreen?.notchRightEdge))")
         guard let screen = separatorScreen else { return }
         if let snapshot = MenuBarAccessibility.snapshot(on: screen) {
-            let items = snapshot.items.map { "\(Int($0.frame.minX))+\(Int($0.frame.width))\($0.identifier.isEmpty ? "" : ":" + $0.identifier)" }
+            // Other apps' identifiers would tell which apps are installed; only HideBar's own are named.
+            let items = snapshot.items.map { item in
+                let own = item.identifier.hasPrefix(MenuBarAccessibility.identifierPrefix)
+                return "\(Int(item.frame.minX))+\(Int(item.frame.width))\(own ? ":" + item.identifier : "")"
+            }
             trace("accessibility: overflowButton=\(String(describing: snapshot.overflowButton)) items=\(items.joined(separator: " "))")
         } else {
             trace("accessibility: no snapshot (not trusted?)")
@@ -231,6 +235,34 @@ final class MenuBarController: NSObject, ObservableObject {
         }
     }
 
+
+    /// Layout state for the diagnostics report; positions only, never which app an item belongs to.
+    func diagnosticLines() -> [String] {
+        func describe(_ rect: NSRect?) -> String {
+            rect.map { "\(Int($0.minX))+\(Int($0.width))" } ?? "none"
+        }
+        var state = [isCollapsed ? "collapsed" : "expanded"]
+        if isRevealing { state.append("revealing") }
+        if isArranging { state.append("arranging") }
+        if isOverflowRowOpen { state.append("overflow row open") }
+        var lines = [
+            "State: \(state.joined(separator: ", "))",
+            "Separator: \(describe(separatorItem.button?.window?.frame)), length \(Int(separatorItem.length)), "
+                + "in bar \(laidOutSeparatorFrame() != nil), anchor \(anchorMaxX.map { "\(Int($0))" } ?? "none")",
+        ]
+        guard let screen = separatorScreen else { return lines }
+        let edge = layoutEdge(on: screen)
+        lines.append("Layout edge: \(edge.map { "\(Int($0))" } ?? "none")")
+        if let snapshot = MenuBarAccessibility.snapshot(on: screen) {
+            let positions = snapshot.items.map(\.frame).sorted { $0.minX < $1.minX }.map { describe($0) }
+            lines.append("Menu bar items (\(positions.count)): \(positions.joined(separator: " ")), « at \(describe(snapshot.overflowButton))")
+            if let edge {
+                let leaks = iconsLeftOfSeparator(on: screen, edge: edge) ?? []
+                lines.append("Icons left of the separator: \(leaks.isEmpty ? "none" : leaks.map { describe($0) }.joined(separator: " "))")
+            }
+        }
+        return lines
+    }
 
     func prepareForTermination() {
         fitTask?.cancel()

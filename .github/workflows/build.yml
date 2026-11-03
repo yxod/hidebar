@@ -1,0 +1,26 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Translations are complete
+        run: |
+          python3 scripts/check-localizations.py
+          plutil -lint Resources/Info.plist Resources/*.lproj/Localizable.strings
+
+      - name: Build the app bundle (ad-hoc signed)
+        run: SIGN_IDENTITY=- ./build.sh
+
+      - name: The bundle is complete
+        run: |
+          test -x build/HideBar.app/Contents/MacOS/HideBar
+          test -d build/HideBar.app/Contents/Frameworks/Sparkle.framework
+          codesign --verify --strict --deep build/HideBar.app

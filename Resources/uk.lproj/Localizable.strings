@@ -14,7 +14,6 @@
 "Remove shortcut" = "Видалити сполучення";
 "Press keys…" = "Натисніть клавіші…";
 "Record Shortcut" = "Записати сполучення";
-"HideBar Settings" = "Налаштування HideBar";
 "General" = "Загальні";
 "Launch at login" = "Запускати під час входу в систему";
 "Allow HideBar in System Settings › Login Items." = "Дозвольте HideBar у Системних параметрах › Обʼєкти входу.";
@@ -34,7 +33,6 @@
 "Icon positions" = "Розташування";
 "Reset Positions" = "Скинути позиції";
 "Menu Bar Settings…" = "Параметри рядка меню…";
-"Version" = "Версія";
 "Hiding method" = "Спосіб приховування";
 "System overflow «" = "Системне переповнення «";
 "Off-screen push" = "Зсув за край екрана";
@@ -66,3 +64,8 @@
 "Download and install updates automatically" = "Автоматично завантажувати й встановлювати оновлення";
 "Not checked yet" = "Ще не перевірялося";
 "Last checked: %@" = "Остання перевірка: %@";
+"Copy Diagnostics" = "Копіювати діагностику";
+"Copied" = "Скопійовано";
+"Copies versions, display and menu bar details and recent log lines for a bug report." = "Копіює версії, дані про екран і рядок меню та останні рядки журналу для звіту про помилку.";
+"About" = "Про програму";
+"Version %@" = "Версія %@";
